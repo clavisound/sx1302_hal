@@ -1221,15 +1221,17 @@ int lgw_stop(void) {
         err = LGW_HAL_ERROR;
     }
 
-    if (CONTEXT_COM_TYPE == LGW_COM_SPI) {
-        DEBUG_MSG("INFO: Closing I2C for temperature sensor\n");
-        x = i2c_linuxdev_close(ts_fd);
-        if (x != 0) {
-            printf("ERROR: failed to close I2C temperature sensor device (err=%i)\n", x);
-            err = LGW_HAL_ERROR;
+        if (CONTEXT_COM_TYPE == LGW_COM_SPI) {
+        if (ts_fd >= 0) {
+            DEBUG_MSG("INFO: Closing I2C for temperature sensor\n");
+            x = i2c_linuxdev_close(ts_fd);
+            if (x != 0) {
+                printf("ERROR: failed to close I2C temperature sensor device (err=%i)\n", x);
+                err = LGW_HAL_ERROR;
+            }
         }
 
-        if (CONTEXT_BOARD.full_duplex == true) {
+        if ((CONTEXT_BOARD.full_duplex == true) && (ad_fd >= 0)) {
             DEBUG_MSG("INFO: Closing I2C for AD5338R\n");
             x = i2c_linuxdev_close(ad_fd);
             if (x != 0) {
