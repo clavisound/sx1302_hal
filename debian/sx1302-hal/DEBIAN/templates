@@ -1,9 +1,0 @@
-Template: sx1302-hal/region
-Type: select
-Choices: EU868, US915
-Default: EU868
-Description: LoRaWAN region for the SX1302 concentrator:
- Choose the frequency plan matching your Bobcat 300 hardware.
- .
-   EU868 — Europe, 863-870 MHz
-   US915 — North America, 902-928 MHz
