@@ -1,0 +1,45 @@
+[Unit]
+Description=SX1302 LoRa Packet Forwarder (Bobcat 300, data-only)
+Documentation=https://github.com/Lora-net/sx1302_hal
+After=network-online.target sx1302-hal-gpio-perms.service
+Wants=network-online.target sx1302-hal-gpio-perms.service
+# Uncomment the following line if the miner or LNS runs on the same host
+# and you want this unit to wait for it:
+# After=helium-miner.service
+
+[Service]
+Type=simple
+# reset_lgw.sh is called as ./reset_lgw.sh by lora_pkt_fwd, so the
+# working directory must contain it. It lives in /usr/bin.
+WorkingDirectory=/usr/bin
+ExecStartPre=/usr/bin/reset_lgw.sh start
+ExecStart=/usr/bin/lora_pkt_fwd -c /etc/sx1302-hal/global_conf.json
+ExecStopPost=/usr/bin/reset_lgw.sh stop
+
+Restart=on-failure
+RestartSec=5
+
+# The forwarder needs /dev/spidev5.0 and access to sysfs GPIO. Running
+# as root is the simplest correct answer; the udev rules and gpio-perms
+# service are still useful for interactive tools.
+User=root
+Group=root
+
+# Basic hardening — comment out any line that causes trouble
+# (SPI/GPIO access needs many of these relaxed).
+NoNewPrivileges=false
+ProtectSystem=false
+ProtectHome=false
+PrivateTmp=false
+ProtectKernelTunables=false
+ProtectControlGroups=false
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+RestrictRealtime=false
+LockPersonality=false
+MemoryDenyWriteExecute=false
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

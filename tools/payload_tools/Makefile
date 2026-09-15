@@ -9,7 +9,7 @@ CROSS_COMPILE ?=
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 
-CFLAGS := -O2 -Wall -Wextra -std=c99 -I. -I../../libtools/inc
+override CFLAGS := -O2 -Wall -Wextra -std=c99 -I. -I../../libtools/inc
 
 ### linking options
 

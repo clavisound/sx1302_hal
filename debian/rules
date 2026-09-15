@@ -1,0 +1,70 @@
+#!/usr/bin/make -f
+
+PKGDIR := debian/sx1302-hal
+DEVDIR := debian/libloragw-dev
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	for f in libtools/Makefile libloragw/Makefile packet_forwarder/Makefile \
+	         util_spectral_scan/Makefile util_boot/Makefile util_chip_id/Makefile \
+	         util_net_downlink/Makefile tools/payload_tools/Makefile ; do \
+	    if [ -f "$$f" ]; then \
+	        sed -i 's|^CFLAGS :=|override CFLAGS :=|' "$$f" ; \
+	    fi ; \
+	done
+	for f in util_spectral_scan/Makefile util_boot/Makefile util_chip_id/Makefile ; do \
+	    if [ -f "$$f" ]; then \
+	        sed -i 's|-Iinc -I../libloragw/inc|-Iinc -I../libloragw/inc -I../libtools/inc|g' "$$f" ; \
+	    fi ; \
+	done
+
+override_dh_auto_build:
+	$(MAKE) clean
+	$(MAKE) all
+
+override_dh_auto_test:
+	# No test suite
+
+override_dh_auto_install:
+	install -d $(PKGDIR)/usr/bin
+	for b in packet_forwarder/lora_pkt_fwd \
+	         util_chip_id/chip_id \
+	         util_net_downlink/net_downlink \
+	         util_spectral_scan/spectral_scan \
+	         util_boot/boot ; do \
+	    if [ -x "$$b" ]; then install -m 0755 "$$b" $(PKGDIR)/usr/bin/ ; fi ; \
+	done
+	if [ -f debian/configs/bobcat/reset_lgw.sh ]; then \
+	    install -m 0755 debian/configs/bobcat/reset_lgw.sh $(PKGDIR)/usr/bin/reset_lgw.sh ; \
+	fi
+	install -d $(PKGDIR)/usr/share/sx1302-hal/configs
+	if [ -d debian/configs/bobcat ]; then \
+	    install -m 0644 debian/configs/bobcat/global_conf.json.* \
+	        $(PKGDIR)/usr/share/sx1302-hal/configs/ ; \
+	fi
+	install -d $(DEVDIR)/usr/lib
+	if [ -f libloragw/libloragw.a ]; then \
+	    install -m 0644 libloragw/libloragw.a $(DEVDIR)/usr/lib/ ; \
+	fi
+	install -d $(DEVDIR)/usr/include/sx1302
+	if [ -d libloragw/inc ]; then \
+	    install -m 0644 libloragw/inc/*.h $(DEVDIR)/usr/include/sx1302/ ; \
+	fi
+	# systemd units
+	install -d $(PKGDIR)/lib/systemd/system
+	if [ -f debian/sx1302-hal-gpio-perms.service ]; then \
+	    install -m 0644 debian/sx1302-hal-gpio-perms.service \
+	        $(PKGDIR)/lib/systemd/system/ ; \
+	fi
+	if [ -f debian/sx1302-hal-pkt-fwd.service ]; then \
+	    install -m 0644 debian/sx1302-hal-pkt-fwd.service \
+	        $(PKGDIR)/lib/systemd/system/ ; \
+	fi
+
+override_dh_auto_clean:
+	$(MAKE) clean || true
+
+override_dh_strip:
+	dh_strip --no-automatic-dbgsym

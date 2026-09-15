@@ -1,0 +1,6 @@
+# SPI bus access for the SX1302 concentrator
+SUBSYSTEM=="spidev", KERNEL=="spidev5.*",  GROUP="dialout", MODE="0660"
+
+# GPIO character device access for the reset/power lines
+SUBSYSTEM=="gpio",   KERNEL=="gpiochip3",  GROUP="dialout", MODE="0660"
+SUBSYSTEM=="gpio",   KERNEL=="gpiochip4",  GROUP="dialout", MODE="0660"

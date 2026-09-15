@@ -41,7 +41,7 @@ APP_LIBS := -lparson -lbase64 -lpthread
 LIB_PATH := ../libtools
 
 ### Expand build options
-CFLAGS := -std=c99 $(WARN_CFLAGS) $(OPT_CFLAGS) $(DEBUG_CFLAGS)
+override CFLAGS := -std=c99 $(WARN_CFLAGS) $(OPT_CFLAGS) $(DEBUG_CFLAGS)
 CC := $(CROSS_COMPILE)gcc
 AR := $(CROSS_COMPILE)ar
 

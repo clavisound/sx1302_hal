@@ -1,0 +1,31 @@
+#!/bin/sh
+set -e
+
+. /usr/share/debconf/confmodule
+
+case "$1" in
+    configure)
+        db_get sx1302-hal/region
+        REGION="${RET:-EU868}"
+
+        SRC="/usr/share/sx1302-hal/configs/global_conf.json.$REGION"
+        DST="/etc/sx1302-hal/global_conf.json"
+
+        install -d /etc/sx1302-hal
+
+        # Overwrite only if:
+        #  - target doesn't exist yet (fresh install), OR
+        #  - we're being invoked by dpkg-reconfigure (reconfigure case)
+        if [ ! -f "$DST" ] || [ -n "$DPKG_RECONFIGURE" ]; then
+            if [ -f "$SRC" ]; then
+                install -m 0644 "$SRC" "$DST"
+            else
+                echo "sx1302-hal: missing template $SRC" >&2
+            fi
+        fi
+        ;;
+esac
+
+#DEBHELPER#
+
+exit 0

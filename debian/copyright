@@ -1,0 +1,8 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: sx1302_hal
+Source: https://github.com/Lora-net/sx1302_hal
+
+Files: *
+Copyright: 2020 Semtech
+License: Semtech-Proprietary
+ See LICENSE.TXT in the source tree.

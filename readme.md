@@ -1,4 +1,6 @@
-This fork is suitable for Bobcat G295 to disable the reading of temperature. It returns always 25.
+This fork is suitable for Bobcat G295
+- Disables the reading of temperature. It returns always 25.
+- Increases the sleep time from 10 to 50 and cpu usage from 30% to 7% at 400MHz.
 	 
 	 / _____)             _              | |
 	( (____  _____ ____ _| |_ _____  ____| |__

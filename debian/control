@@ -1,0 +1,30 @@
+Source: sx1302-hal
+Section: net
+Priority: optional
+Maintainer: Michales Michaloudes <korgie@gmail.com>
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 4.6.0
+Homepage: https://github.com/Lora-net/sx1302_hal
+Rules-Requires-Root: no
+
+Package: sx1302-hal
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, debconf (>= 0.5) | debconf-2.0, systemd
+Pre-Depends: debconf (>= 0.5) | debconf-2.0
+Description: Semtech SX1302/SX1303 LoRa concentrator HAL and packet forwarder
+ Hardware Abstraction Layer, packet forwarder, and utility programs
+ for LoRa gateways based on the Semtech SX1302/SX1303 concentrator chip.
+ .
+ Includes lora_pkt_fwd (packet forwarder), util_chip_id, util_net_downlink,
+ util_spectral_scan, util_boot, reset_lgw.sh, and reference configuration
+ files for Bobcat 300 gateways.
+ .
+ The packet forwarder is configured for Semtech UDP protocol (data-only);
+ no Helium blockchain/miner stack is required.
+
+Package: libloragw-dev
+Architecture: any
+Depends: ${misc:Depends}
+Description: Development files for the SX1302 LoRa concentrator HAL
+ Static library (libloragw.a) and headers for building applications
+ against the Semtech SX1302/SX1303 HAL.
