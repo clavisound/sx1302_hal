@@ -1597,7 +1597,21 @@ int lgw_get_temperature(float* temperature) {
 
     switch (CONTEXT_COM_TYPE) {
         case LGW_COM_SPI:
-            err = stts751_get_temperature(ts_fd, ts_addr, temperature);
+            if (ts_fd < 0) {
+                /* No temperature sensor found at startup (e.g. Bobcat 300
+                 * has none on any I2C bus). Return a default so RSSI
+                 * temperature compensation and the runtime status thread
+                 * continue to work. */
+                *temperature = 25.0f;
+                err = LGW_HAL_SUCCESS;
+            } else {
+                err = stts751_get_temperature(ts_fd, ts_addr, temperature);
+                if (err != LGW_HAL_SUCCESS) {
+                    /* Sensor previously found but now unreadable; use default. */
+                    *temperature = 25.0f;
+                    err = LGW_HAL_SUCCESS;
+                }
+            }
             break;
         case LGW_COM_USB:
             err = lgw_com_get_temperature(temperature);
