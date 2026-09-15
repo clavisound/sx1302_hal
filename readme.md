@@ -1,3 +1,5 @@
+This fork is suitable for Bobcat G295 to disable the reading of temperature. It returns always 25.
+	 
 	 / _____)             _              | |
 	( (____  _____ ____ _| |_ _____  ____| |__
 	 \____ \| ___ |    (_   _) ___ |/ ___)  _ \
