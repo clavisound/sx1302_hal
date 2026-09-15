@@ -1093,25 +1093,32 @@ int lgw_start(void) {
     dbg_init_random();
 
     if (CONTEXT_COM_TYPE == LGW_COM_SPI) {
-        /* Find the temperature sensor on the known supported ports */
-        for (i = 0; i < (int)(sizeof I2C_PORT_TEMP_SENSOR); i++) {
-            ts_addr = I2C_PORT_TEMP_SENSOR[i];
-            err = i2c_linuxdev_open(I2C_DEVICE, ts_addr, &ts_fd);
-            if (err != LGW_I2C_SUCCESS) {
-                printf("ERROR: failed to open I2C for temperature sensor on port 0x%02X\n", ts_addr);
-                return LGW_HAL_ERROR;
-            }
-
-            err = stts751_configure(ts_fd, ts_addr);
-            if (err != LGW_I2C_SUCCESS) {
-                printf("INFO: no temperature sensor found on port 0x%02X\n", ts_addr);
-                i2c_linuxdev_close(ts_fd);
-                ts_fd = -1;
-            } else {
-                printf("INFO: found temperature sensor on port 0x%02X\n", ts_addr);
-                break;
-            }
+    /* Find the temperature sensor on the known supported ports.
+     * If none is present (e.g. Bobcat 300), leave ts_fd = -1 and
+     * let lgw_get_temperature() fall back to a default. */
+    ts_fd = -1;
+    ts_addr = -1;
+    for (i = 0; i < (int)(sizeof I2C_PORT_TEMP_SENSOR); i++) {
+        ts_addr = I2C_PORT_TEMP_SENSOR[i];
+        err = i2c_linuxdev_open(I2C_DEVICE, ts_addr, &ts_fd);
+        if (err != LGW_I2C_SUCCESS) {
+            ts_fd = -1;
+            continue;
         }
+
+        err = stts751_configure(ts_fd, ts_addr);
+        if (err != LGW_I2C_SUCCESS) {
+            i2c_linuxdev_close(ts_fd);
+            ts_fd = -1;
+            continue;
+        }
+        printf("INFO: found temperature sensor on port 0x%02X\n", ts_addr);
+        break;
+    }
+    if (ts_fd < 0) {
+        printf("INFO: no temperature sensor found; using default 25.0 C\n");
+    }
+}
         if (i == sizeof I2C_PORT_TEMP_SENSOR) {
             printf("ERROR: no temperature sensor found.\n");
             return LGW_HAL_ERROR;
