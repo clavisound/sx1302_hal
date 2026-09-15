@@ -1125,7 +1125,6 @@ int lgw_start(void) {
                 printf("ERROR: failed to open I2C for ad5338r\n");
                 return LGW_HAL_ERROR;
             }
-        }
 
             err = ad5338r_configure(ad_fd, I2C_PORT_DAC_AD5338R);
             if (err != LGW_I2C_SUCCESS) {
@@ -1144,7 +1143,6 @@ int lgw_start(void) {
             }
             printf("INFO: AD5338R: Set DAC output to 0x%02X 0x%02X\n", (uint8_t)VOLTAGE2HEX_H(0), (uint8_t)VOLTAGE2HEX_L(0));
         }
-    }
 
     /* Connect to the external sx1261 for LBT or Spectral Scan */
     if (CONTEXT_SX1261.enable == true) {
